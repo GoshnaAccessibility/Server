@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions
+from Server import *
+import ApiFunctions
 
 class FlightID:
     def __init__(self, flight_id):
@@ -29,7 +29,7 @@ class ListeningUser:
 
     @app.route('/goshna/api/flights/adduser/<int:user_id>/<int:flight_id>', methods=['GET'])
     def add_listening_user(user_id, flight_id):
-        
+
         result = ApiFunctions.post_db("INSERT INTO listening_users VALUES (?, ?)", [user_id, flight_id]);
         inserted_id = c.lastrowid
         print u'Inserted new listening_user at row ' + str(inserted_id)
@@ -37,7 +37,7 @@ class ListeningUser:
 
     @app.route('/goshna/api/flights/removeuser/<int:user_id>/<int:flight_id>', methods=['GET'])
     def remove_listening_user(user_id, flight_id):
-        
+
         ApiFunctions.post_db("DELETE FROM listening_users WHERE user_id=? and flight_id=?", [user_id, flight_id])
         print u'Deleted listening_user with ID ' + str(0)
         return jsonify({'id': str(0)})

@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
+from Server import *
 import ApiFunctions, Message
 
 class User:

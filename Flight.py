@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions, DisplayFlight
+from Server import *
+import ApiFunctions, DisplayFlight
 from datetime import date, time;
 
 class Flight:
@@ -14,10 +14,10 @@ class Flight:
 
     def to_json(self):
         return {
-            'id': self.id, 
-            'airline_id': self.airline_id, 
-            'dest_airport': self.dest_airport, 
-            'flight_number': self.flight_number, 
+            'id': self.id,
+            'airline_id': self.airline_id,
+            'dest_airport': self.dest_airport,
+            'flight_number': self.flight_number,
             'gate': self.gate,
             'departure': self.departure
         }
@@ -79,12 +79,12 @@ class Flight:
 
             airline = ApiFunctions.query_db("SELECT airline_short, airline_full FROM airlines WHERE id = ?", [row['airline_id']], one=True)
             flight = DisplayFlight.DisplayFlight(
-                row['id'], 
-                airline['airline_full'], 
-                airline['airline_short'], 
-                row['dest_airport'], 
-                row['flight_number'], 
-                row['gate'], 
+                row['id'],
+                airline['airline_full'],
+                airline['airline_short'],
+                row['dest_airport'],
+                row['flight_number'],
+                row['gate'],
                 row['departure']
             )
 
@@ -97,12 +97,12 @@ class Flight:
         for row in results:
             airline = ApiFunctions.query_db("SELECT airline_short, airline_full FROM airlines WHERE id = ?", [row['airline_id']], one=True)
             flight = DisplayFlight.DisplayFlight(
-                row['id'], 
+                row['id'],
                 airline['airline_full'],
                 airline['airline_short'],
-                row['dest_airport'], 
-                row['flight_number'], 
-                row['gate'], 
+                row['dest_airport'],
+                row['flight_number'],
+                row['gate'],
                 row['departure']
             )
 
@@ -118,12 +118,12 @@ class Flight:
 
             airline = ApiFunctions.query_db("SELECT airline_short, airline_full FROM airlines WHERE id = ?", [row['airline_id']], one=True)
             flight = DisplayFlight.DisplayFlight(
-                row['id'], 
-                airline['airline_full'], 
-                airline['airline_short'], 
-                row['dest_airport'], 
-                row['flight_number'], 
-                row['gate'], 
+                row['id'],
+                airline['airline_full'],
+                airline['airline_short'],
+                row['dest_airport'],
+                row['flight_number'],
+                row['gate'],
                 row['departure']
             )
 

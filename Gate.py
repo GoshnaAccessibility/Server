@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions
+from Server import *
+import ApiFunctions
 
 class Gate:
     def __init__(self, id, name, airport_id):
@@ -25,7 +25,7 @@ class Gate:
     def create_gate():
         if not request.json or not 'name' in request.json or not 'airport_id' in request.json:
             abort(400)
-        
+
         name = request.json['name']
         airport_id = request.json['airport_id']
         result = ApiFunctions.post_db("INSERT INTO gates VALUES (NULL, ?, ?)", [name, airport_id]);
@@ -37,7 +37,7 @@ class Gate:
     def find_gates():
         if not request.json or not 'id' in request.json:
             abort(400)
-        
+
         airport_id = request.json['id']
         gates = []
         results = ApiFunctions.query_db("SELECT * FROM gates where airport_id=?", [airport_id]);
@@ -52,4 +52,3 @@ class Gate:
         ApiFunctions.post_db("DELETE FROM gates WHERE id=?", [gate_id])
         print u'Deleted listening_user with ID ' + str(inserted_id)
         return jsonify({'result': True})
-

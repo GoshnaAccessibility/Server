@@ -1,4 +1,4 @@
-from goshna import *
+from Server import *
 from flask import make_response, jsonify
 
 # Standard function
@@ -18,4 +18,3 @@ def post_db(query, args=(), one=False):
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
-

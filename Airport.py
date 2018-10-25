@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions
+from Server import *
+import ApiFunctions
 
 class Airport:
     def __init__(self, id, airport_short, airport_full):
@@ -10,8 +10,8 @@ class Airport:
 
     def to_json(self):
         return {
-			'id': self.id, 
-			'airport_short': self.airport_short, 
+			'id': self.id,
+			'airport_short': self.airport_short,
 			'airport_full': self.airport_full
 		}
 
@@ -39,7 +39,7 @@ class Airport:
     def create_airport():
         if not request.json or not 'airport_short' in request.json or not 'airport_full' in request.json:
             abort(400)
-        
+
         airport_short = request.json['airport_short']
         airport_full = request.json['airport_full']
 
@@ -55,4 +55,3 @@ class Airport:
         ApiFunctions.post_db("DELETE FROM airports WHERE id=?", [airport_id])
         print u'Deleted airport with ID ' + str(inserted_id)
         return jsonify({'result': True})
-

@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions
+from Server import *
+import ApiFunctions
 
 class Airline:
     def __init__(self, id, airline_short, airline_full):
@@ -10,8 +10,8 @@ class Airline:
 
     def to_json(self):
         return {
-            'id': self.id, 
-            'airline_short': self.airline_short, 
+            'id': self.id,
+            'airline_short': self.airline_short,
             'airline_full': self.airline_full
         }
 
@@ -39,7 +39,7 @@ class Airline:
     def create_airline():
         if not request.json or not 'airline_short' in request.json or not 'airline_full' in request.json:
             abort(400)
-        
+
         airline_short = request.json['airline_short']
         airline_full = request.json['airline_full']
 
@@ -55,4 +55,3 @@ class Airline:
         ApiFunctions.post_db("DELETE FROM airlines WHERE id=?", [airline_id])
         print u'Deleted airline with ID ' + str(inserted_id)
         return jsonify({'result': True})
-

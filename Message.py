@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
-from goshna import *
-from goshna import ApiFunctions
+from Server import *
+import ApiFunctions
 
 class Message:
     def __init__(self, id, body, time, flight_id):
@@ -11,7 +11,7 @@ class Message:
 
     def to_json(self):
         return {
-            'id': self.id, 
+            'id': self.id,
             'body': self.body,
             'time': self.time,
             'flight_id': self.flight_id
@@ -51,7 +51,7 @@ class Message:
 	# 	# TODO: Check for upcoming flights
 
 	# 	for row in flights:
-	# 		flight_id = row['flight_id']	
+	# 		flight_id = row['flight_id']
 	# 		ApiFunctions.post_db("INSERT INTO messages VALUES (NULL, ?, ?, ?)", [body, time, flight_id]);
 
 	# 	inserted_id = c.lastrowid
@@ -64,4 +64,3 @@ class Message:
         ApiFunctions.post_db("DELETE FROM messages WHERE id=?", [message_id])
         print u'Deleted message with ID ' + str(inserted_id)
         return jsonify({'result': True})
-

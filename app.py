@@ -1,6 +1,6 @@
 #!flask/bin/python
 from flask import Flask
-from goshna import *
+from Server import *
 import Airport, Airline, Message, Flight, User, ListeningUser, Gate, FlightGate, DisplayFlight
 
 if __name__ == '__main__':
