@@ -1,3 +1,7 @@
+# Project-specific (e.g. virtualenv)
+flask/
+*.sqlite
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
