@@ -33,6 +33,9 @@ class Flight:
         gate = request.json['gate']
         departure = request.json['departure']
 
+        if not airline_id or not dest_airport or not gate:
+            abort(400)
+
         result = ApiFunctions.post_db("INSERT INTO flights VALUES (NULL, ?, ?, ?, ?, ?)", [airline_id, dest_airport, flight_number, gate, departure]);
         inserted_id = c.lastrowid
 
@@ -147,6 +150,9 @@ class Flight:
 
         body = request.json['body']
         time = request.json['time']
+
+        if not body:
+            abort(400)
 
         result = ApiFunctions.post_db("INSERT INTO messages VALUES (NULL, ?, ?, ?)", [body, time, flight_id])
         inserted_id = c.lastrowid

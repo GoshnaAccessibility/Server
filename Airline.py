@@ -43,6 +43,9 @@ class Airline:
         airline_short = request.json['airline_short']
         airline_full = request.json['airline_full']
 
+        if not airline_short or not airline_full:
+            abort(400)
+
         result = ApiFunctions.post_db("INSERT INTO airlines VALUES (NULL, ?, ?)", [airline_short, airline_full]);
         inserted_id = c.lastrowid
 

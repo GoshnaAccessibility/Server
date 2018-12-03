@@ -28,6 +28,10 @@ class Gate:
 
         name = request.json['name']
         airport_id = request.json['airport_id']
+
+        if not name:
+            abort(400)
+
         result = ApiFunctions.post_db("INSERT INTO gates VALUES (NULL, ?, ?)", [name, airport_id]);
         inserted_id = c.lastrowid
         print u'Inserted new gate at row ' + str(inserted_id)
