@@ -28,7 +28,7 @@ c.execute('''create table if not exists messages(id integer primary key autoincr
 
 # Airlines
 c.execute('''create table if not exists airlines(id integer primary key autoincrement, airline_short text, airline_full text)''')
-c.execute('''insert into airlines (airline_short, airline_full) values ('Goshna', 'Goshna Airline')''')
+c.execute('''replace into airlines values (1, 'GO', 'Goshna Airlines')''')
 
 # # Airports
 # # ! removed
