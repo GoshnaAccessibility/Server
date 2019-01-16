@@ -2,14 +2,16 @@ from flask import Flask, jsonify, abort, request
 from Server import *
 import ApiFunctions
 
+
 class Gate:
     def __init__(self, id, name, airport_id):
-		self.id = id
-		self.name = name
-		self.airport_id = airport_id
+        self.id = id
+        self.name = name
+        self.airport_id = airport_id
 
     def to_json(self):
-		return {'id': self.id, 'name': self.name, 'airport_id': self.airport_id}
+        return {'id': self.id, 'name': self.name,
+                'airport_id': self.airport_id}
 
     @app.route('/goshna/api/gates', methods=['GET'])
     def get_gates():
@@ -32,7 +34,8 @@ class Gate:
         if not name:
             abort(400)
 
-        result = ApiFunctions.post_db("INSERT INTO gates VALUES (NULL, ?, ?)", [name, airport_id]);
+        result = ApiFunctions.post_db("INSERT INTO gates VALUES (NULL, ?, ?)",
+                                      [name, airport_id]);
         inserted_id = c.lastrowid
         print u'Inserted new gate at row ' + str(inserted_id)
         return jsonify({'id': str(inserted_id)}), 201

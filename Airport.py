@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, request
 from Server import *
 import ApiFunctions
 
+
 class Airport:
     def __init__(self, id, airport_short, airport_full):
         self.id = id
@@ -10,17 +11,18 @@ class Airport:
 
     def to_json(self):
         return {
-			'id': self.id,
-			'airport_short': self.airport_short,
-			'airport_full': self.airport_full
-		}
+            'id': self.id,
+            'airport_short': self.airport_short,
+            'airport_full': self.airport_full
+        }
 
     @app.route('/goshna/api/airports', methods=['GET'])
     def get_airports():
         airports = []
         results = ApiFunctions.query_db("SELECT * FROM airports")
         for row in results:
-            airport = Airport(row['id'], row['airport_short'], row['airport_full'])
+            airport = Airport(row['id'], row['airport_short'],
+                              row['airport_full'])
             airports.append(airport.to_json())
 
         return jsonify({'airports': airports})
@@ -28,7 +30,8 @@ class Airport:
     @app.route('/goshna/api/airports/<int:airport_id>', methods=['GET'])
     def get_airport(airport_id):
 
-        row = ApiFunctions.query_db("SELECT * FROM airports WHERE id = ?", [airport_id], one=True)
+        row = ApiFunctions.query_db("SELECT * FROM airports WHERE id = ?",
+                                    [airport_id], one=True)
         if row is None:
             abort(404)
 

@@ -1,16 +1,19 @@
 from flask import Flask, jsonify, abort, request
 from Server import *
-import ApiFunctions, DisplayFlight
-from datetime import date, time;
+import ApiFunctions
+import DisplayFlight
+from datetime import date, time
+
 
 class Flight:
-    def __init__(self, id, airline_id, dest_airport, flight_number, gate, departure):
-        self.id = id;
-        self.airline_id = airline_id;
-        self.dest_airport = dest_airport;
-        self.flight_number = flight_number;
+    def __init__(self, id, airline_id, dest_airport, flight_number, gate,
+                 departure):
+        self.id = id
+        self.airline_id = airline_id
+        self.dest_airport = dest_airport
+        self.flight_number = flight_number
         self.gate = gate
-        self.departure = departure;
+        self.departure = departure
 
     def to_json(self):
         return {
@@ -76,7 +79,8 @@ class Flight:
 
     @app.route('/goshna/api/flights/find/<string:gate>', methods=['GET'])
     def find_flight(gate):
-            row = ApiFunctions.query_db("SELECT * FROM flights WHERE gate = ?", [gate], one=True)
+            row = ApiFunctions.query_db("SELECT * FROM flights WHERE gate = ?",
+                                        [gate], one=True)
             if row is None:
                 abort(404)
 
@@ -113,9 +117,10 @@ class Flight:
 
         return jsonify({'flights': flights})
 
-	@app.route('/goshna/api/flights/<int:flight_id>', methods=['GET'])
-	def get_flight(flight_id):
-            row = ApiFunctions.query_db("SELECT * FROM flights WHERE id = ?", [flight_id], one=True)
+    @app.route('/goshna/api/flights/<int:flight_id>', methods=['GET'])
+    def get_flight(flight_id):
+            row = ApiFunctions.query_db("SELECT * FROM flights WHERE id = ?",
+                                        [flight_id], one=True)
             if row is None:
                 abort(404)
 
@@ -138,12 +143,14 @@ class Flight:
 
         messages = []
         for row in message_results:
-            message = Message.Message(row['id'], row['body'], row['time'], flight_id)
+            message = Message.Message(row['id'], row['body'], row['time'],
+                                      flight_id)
             messages.append(message.to_json())
 
         return jsonify({'messages': messages})
 
-    @app.route('/goshna/api/flights/messages/<int:flight_id>', methods=['POST'])
+    @app.route('/goshna/api/flights/messages/<int:flight_id>',
+               methods=['POST'])
     def create_flight_message(flight_id):
         if not request.json or not 'body' in request.json or not 'time' in request.json:
             abort(400)
@@ -159,8 +166,8 @@ class Flight:
 
         return jsonify({'id': str(inserted_id)}), 201
 
-	@app.route('/goshna/api/flights/<int:flight_id>', methods=['DELETE'])
-	def delete_flight(flight_id):
-            ApiFunctions.post_db("DELETE FROM flights WHERE id=?", [flight_id])
-            print u'Deleted flight with ID ' + str(inserted_id)
-            return jsonify({'result': True})
+    @app.route('/goshna/api/flights/<int:flight_id>', methods=['DELETE'])
+    def delete_flight(flight_id):
+        ApiFunctions.post_db("DELETE FROM flights WHERE id=?", [flight_id])
+        print u'Deleted flight with ID ' + str(inserted_id)
+        return jsonify({'result': True})

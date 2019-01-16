@@ -2,12 +2,13 @@ from flask import Flask, jsonify, abort, request
 from Server import *
 import ApiFunctions
 
+
 class Message:
     def __init__(self, id, body, time, flight_id):
         self.id = id
-        self.body = body;
-        self.time = time;
-        self.flight_id = flight_id;
+        self.body = body
+        self.time = time
+        self.flight_id = flight_id
 
     def to_json(self):
         return {
@@ -22,7 +23,8 @@ class Message:
         messages = []
         results = ApiFunctions.query_db("SELECT * FROM messages")
         for row in results:
-            message = Message(row['id'], row['body'], row['time'], row['flight_id'])
+            message = Message(row['id'], row['body'], row['time'],
+                              row['flight_id'])
             messages.append(message.to_json())
 
         return jsonify({'messages': messages})
@@ -30,11 +32,13 @@ class Message:
     @app.route('/goshna/api/messages/<int:message_id>', methods=['GET'])
     def get_message(message_id):
 
-        row = ApiFunctions.query_db("SELECT * FROM messages WHERE id = ?", [message_id], one=True)
+        row = ApiFunctions.query_db("SELECT * FROM messages WHERE id = ?",
+                                    [message_id], one=True)
         if row is None:
             abort(404)
 
-        message = Message(row['id'], row['body'], row['time'], row['flight_id'])
+        message = Message(row['id'], row['body'], row['time'],
+                          row['flight_id'])
         return jsonify({'message': message.to_json()})
 
     # @app.route('/goshna/api/messages', methods=['POST'])

@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, abort, request
 from Server import *
-import ApiFunctions, Message
+import ApiFunctions
+import Message
+
 
 class User:
     def __init__(self, id):
@@ -21,7 +23,7 @@ class User:
 
     @app.route('/goshna/api/user', methods=['POST'])
     def create_user():
-        result = ApiFunctions.post_db("INSERT INTO users VALUES (NULL)");
+        result = ApiFunctions.post_db("INSERT INTO users VALUES (NULL)")
         inserted_id = c.lastrowid
         user = User(id)
         print u'Inserted new user at row ' + str(inserted_id)
@@ -40,14 +42,15 @@ class User:
 
         messages = []
         for row in flights:
-            flight_id = row['flight_id'];
+            flight_id = row['flight_id']
 
             # Get all the messages that correspond to this flight_id
             message_results = ApiFunctions.query_db("SELECT * FROM messages where flight_id=?", [flight_id]);
 
             # Add all the messages from that flight to our list
             for row in message_results:
-                message = Message.Message(row['id'], row['text'], row['time'], row['flight_id'])
+                message = Message.Message(row['id'], row['text'], row['time'],
+                                          row['flight_id'])
                 messages.append(message.to_json())
 
         return jsonify({'messages': messages})

@@ -18,4 +18,3 @@ class DisplayFlight:
 			'gate': self.gate,
 			'departure': self.departure
 		}
-

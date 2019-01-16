@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, request
 from Server import *
 import ApiFunctions
 
+
 class Airline:
     def __init__(self, id, airline_short, airline_full):
         self.id = id
@@ -20,7 +21,8 @@ class Airline:
         airlines = []
         results = ApiFunctions.query_db("SELECT * FROM airlines")
         for row in results:
-            airline = Airline(row['id'], row['airline_short'], row['airline_full'])
+            airline = Airline(row['id'], row['airline_short'],
+                              row['airline_full'])
             airlines.append(airline.to_json())
 
         return jsonify({'airlines': airlines})
@@ -28,7 +30,8 @@ class Airline:
     @app.route('/goshna/api/airlines/<int:airline_id>', methods=['GET'])
     def get_airline(airline_id):
 
-        row = ApiFunctions.query_db("SELECT * FROM airlines WHERE id = ?", [airline_id], one=True)
+        row = ApiFunctions.query_db("SELECT * FROM airlines WHERE id = ?",
+                                    [airline_id], one=True)
         if row is None:
             abort(404)
 
