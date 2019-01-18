@@ -1,0 +1,15 @@
+[Unit]
+Description=Goshna (served by uWSGI) airport hard-of-hearing app service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/goshna
+Environment="PATH=/opt/goshna/.venv/bin"
+#ExecStart=/opt/goshna/.venv/bin/uwsgi --ini config/wsgi.ini
+ExecStart=PYTHONPATH=.. /opt/goshna/.venv/bin/uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:application
+
+[Install]
+WantedBy=multi-user.target
