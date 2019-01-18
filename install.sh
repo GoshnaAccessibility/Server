@@ -2,4 +2,5 @@
 sudo apt-get install python-virtualenv
 rm -rf flask/
 virtualenv flask
-flask/bin/pip install flask
+source flask/bin/activate
+pip install -r requirements.txt
