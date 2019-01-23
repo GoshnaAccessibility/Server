@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, request
 from Server import *
 import ApiFunctions
 import DisplayFlight
+import Message
 from datetime import date, time
 
 
@@ -139,15 +140,17 @@ class Flight:
 
     @app.route('/goshna/api/flights/messages/<int:flight_id>', methods=['GET'])
     def get_flight_messages(flight_id):
-        message_results = ApiFunctions.query_db("SELECT * FROM messages WHERE flight_id=? ORDER BY time DESC", [flight_id])
+        try:
+            message_results = ApiFunctions.query_db("SELECT * FROM messages WHERE flight_id=? ORDER BY time DESC", [flight_id])
 
-        messages = []
-        for row in message_results:
-            message = Message.Message(row['id'], row['body'], row['time'],
-                                      flight_id)
-            messages.append(message.to_json())
-
-        return jsonify({'messages': messages})
+            messages = []
+            for row in message_results:
+                message = Message.Message(row['id'], row['body'], row['time'],
+                                          flight_id)
+                messages.append(message.to_json())
+            return jsonify({'messages': messages})
+        except Exception as e:
+            return jsonify({'err': str(e)})
 
     @app.route('/goshna/api/flights/messages/<int:flight_id>',
                methods=['POST'])
