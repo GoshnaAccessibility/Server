@@ -11,6 +11,7 @@ Environment="PATH=/opt/goshna/Server/.venv/bin"
 Environment="PYTHONPATHPATH=.."
 ExecStart=/opt/goshna/Server/.venv/bin/uwsgi --protocol=http --ini config/wsgi.ini
 #ExecStart=/opt/goshna/Server/.venv/bin/uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:application
+StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target
