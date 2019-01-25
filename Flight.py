@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, Response
 from Server import *
 import ApiFunctions
 import DisplayFlight
 import Message
+import time as time2
 from datetime import date, time
 
 
@@ -174,3 +175,40 @@ class Flight:
         ApiFunctions.post_db("DELETE FROM flights WHERE id=?", [flight_id])
         print u'Deleted flight with ID ' + str(inserted_id)
         return jsonify({'result': True})
+
+    @staticmethod
+    def get_messages(flight_id):
+        # TODO use proper blocking, rather than polling
+        time2.sleep(1.0)
+        s = time2.ctime(time2.time())
+        return s
+
+        # TODO
+
+        # # prevMsgId = None
+        # while True:
+        #     time2.sleep(2.0)  # TODO use proper blocking, rather than polling
+        #     message_results = ApiFunctions.query_db(("SELECT * FROM messages"
+        #                                              " WHERE flight_id=? ORDER"
+        #                                              " BY time DESC"),
+        #                                             [flight_id])
+        #     # if prevMsgId != message_results[0]['id']:
+        #     #     pass
+        #     messages = []
+        #     for row in message_results:
+        #         # print row['id']
+        #         message = Message.Message(row['id'], row['body'], row['time'],
+        #                                   flight_id)
+        #         messages.append(message.to_json())
+        #     # Break loop by returning the latest messages
+        #     return jsonify({'messages': messages})
+
+    @app.route('/goshna/api/flights/messages/<int:flight_id>/stream')
+    def get_flight_messages_streamed(flight_id):
+        '''Streams flight messages using Server-Side Events.'''
+        # https://stackoverflow.com/a/51969441/508098
+        def event_stream():
+            while True:
+                # wait for source data to be available, then push it
+                yield 'data: {}\n\n'.format(Flight.get_messages(flight_id))
+        return Response(event_stream(), mimetype="text/event-stream")
