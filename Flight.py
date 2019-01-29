@@ -4,6 +4,7 @@ import ApiFunctions
 import DisplayFlight
 import Message
 import time as time2
+import json
 from datetime import date, time
 
 
@@ -177,38 +178,44 @@ class Flight:
         return jsonify({'result': True})
 
     @staticmethod
-    def get_messages(flight_id):
-        # TODO use proper blocking, rather than polling
-        time2.sleep(1.0)
-        s = time2.ctime(time2.time())
-        return s
-
-        # TODO
-
-        # # prevMsgId = None
-        # while True:
-        #     time2.sleep(2.0)  # TODO use proper blocking, rather than polling
-        #     message_results = ApiFunctions.query_db(("SELECT * FROM messages"
-        #                                              " WHERE flight_id=? ORDER"
-        #                                              " BY time DESC"),
-        #                                             [flight_id])
-        #     # if prevMsgId != message_results[0]['id']:
-        #     #     pass
-        #     messages = []
-        #     for row in message_results:
-        #         # print row['id']
-        #         message = Message.Message(row['id'], row['body'], row['time'],
-        #                                   flight_id)
-        #         messages.append(message.to_json())
-        #     # Break loop by returning the latest messages
-        #     return jsonify({'messages': messages})
+    def get_messages(flight_id, lastMessageTime):
+        if lastMessageTime is None:
+            # Get all messages for the given flight
+            sQuery = ("SELECT * FROM messages WHERE flight_id=? ORDER BY "
+                      "time DESC")
+        else:
+            # Only get more recent messages since last push to client
+            sQuery = ("SELECT * FROM messages WHERE flight_id=? AND time>" +
+                      str(lastMessageTime) + " ORDER BY time DESC")
+        with app.app_context():
+            while True:  # TODO use blocking/events, not polling
+                time2.sleep(2.5)
+                message_results = ApiFunctions.query_db(sQuery, [flight_id])
+                if len(message_results) > 0:
+                    lastMessageTime = message_results[0]['time']
+                    # Format messages fo transport
+                    messages = []
+                    for row in message_results:
+                        message = Message.Message(row['id'], row['body'],
+                                                  row['time'], flight_id)
+                        messages.append(message.to_json())
+                    # Break loop by returning the latest messages
+                    # NB no need to use Flask's jsonify object here, as it adds
+                    # lots of additional processing bloat for a Response object
+                    # (which we do not use or need here for the stream).
+                    return [json.dumps({'messages': messages},
+                                       separators=(',', ':')),  # Minified
+                            lastMessageTime]
 
     @app.route('/goshna/api/flights/messages/<int:flight_id>/stream')
     def get_flight_messages_streamed(flight_id):
         '''Streams flight messages using Server-Side Events.'''
         # https://stackoverflow.com/a/51969441/508098
         def event_stream():
+            lastMessageTime = None
             while True:
                 # wait for source data to be available, then push it
-                yield 'data: {}\n\n'.format(Flight.get_messages(flight_id))
+                [sJSON, lastMessageTime] = Flight.get_messages(flight_id,
+                                                               lastMessageTime)
+                yield 'data: {}\n\n'.format(sJSON)
         return Response(event_stream(), mimetype="text/event-stream")
