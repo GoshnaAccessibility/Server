@@ -177,6 +177,9 @@ class Flight:
         print u'Deleted flight with ID ' + str(inserted_id)
         return jsonify({'result': True})
 
+    push_poll = 2.5  # 2.5 seconds
+    keep_alive_poll = push_poll * 10  # 25 seconds
+
     @staticmethod
     def get_messages(flight_id, lastMessageTime):
         if lastMessageTime is None:
@@ -188,8 +191,10 @@ class Flight:
             sQuery = ("SELECT * FROM messages WHERE flight_id=? AND time>" +
                       str(lastMessageTime) + " ORDER BY time DESC")
         with app.app_context():
+            alive_counter = 0
             while True:  # TODO use blocking/events, not polling
-                time2.sleep(2.5)
+                time2.sleep(push_poll)
+                alive_counter = alive_counter + push_poll
                 message_results = ApiFunctions.query_db(sQuery, [flight_id])
                 if len(message_results) > 0:
                     lastMessageTime = message_results[0]['time']
@@ -206,6 +211,8 @@ class Flight:
                     return [json.dumps({'messages': messages},
                                        separators=(',', ':')),  # Minified
                             lastMessageTime]
+                elif alive_counter >= keep_alive_poll:
+                    raise IdleConnectionException()
 
     @app.route('/goshna/api/flights/messages/<int:flight_id>/stream')
     def get_flight_messages_streamed(flight_id):
@@ -214,8 +221,23 @@ class Flight:
         def event_stream():
             lastMessageTime = None
             while True:
-                # wait for source data to be available, then push it
-                [sJSON, lastMessageTime] = Flight.get_messages(flight_id,
-                                                               lastMessageTime)
-                yield 'data: {}\n\n'.format(sJSON)
+                try:
+                    # wait for source data to be available, then push it
+                    [sJSON,
+                     lastMessageTime] = Flight.get_messages(flight_id,
+                                                            lastMessageTime)
+                    yield 'data: {}\n\n'.format(sJSON)
+                except IdleConnectionException as zce:
+                    # TCP keeps connections open even if client no longer
+                    # exists; TCP only checks connections on write, not on
+                    # read. To test if a subscribed client is still active,
+                    # send a simple/small message ('\n') that will be ignored
+                    # by the client as it is expecting to see (e.g.) "data: ".
+                    # This is a keep-alive, of sorts - I'm certain there must
+                    # be a better way to do this.
+                    yield '\n'  # Broken pipes will raise an IOError
         return Response(event_stream(), mimetype="text/event-stream")
+
+
+class IdleConnectionException(Exception):
+    pass
