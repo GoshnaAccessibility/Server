@@ -1,8 +1,10 @@
 # Project-specific (e.g. virtualenv)
 flask/
 .venv/
+.venv_windows/
 *.sqlite
 *.sock
+database-connection.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

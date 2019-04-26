@@ -4,14 +4,18 @@ from flask import make_response, jsonify
 
 # Standard function
 def query_db(query, args=(), one=False):
-    cur = c.execute(query, args)
+    cur = c  # c created in _init_.py
+    # NB if using PostgreSQL, cur.execute returns None, unlike SQLite.
+    cur.execute(query, args)
     rv = [dict((cur.description[idx][0], value)
           for idx, value in enumerate(row)) for row in cur.fetchall()]
     return (rv[0] if rv else None) if one else rv
 
 
 def post_db(query, args=(), one=False):
-    cur = c.execute(query, args)
+    cur = c  # c created in _init_.py
+    # NB if using PostgreSQL, cur.execute returns None, unlike SQLite.
+    cur.execute(query, args)
     rv = [dict((cur.description[idx][0], value)
           for idx, value in enumerate(row)) for row in cur.fetchall()]
     conn.commit()
